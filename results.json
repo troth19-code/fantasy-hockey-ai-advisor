@@ -1,0 +1,99 @@
+{
+  "mode": "demo",
+  "generated_at": "2026-10-22T10:21:19.308739+00:00",
+  "weekly_projected_points": null,
+  "acquisitions_remaining": null,
+  "days": [
+    {
+      "day": "Mon",
+      "players": null,
+      "projected_points": null
+    },
+    {
+      "day": "Tue",
+      "players": [
+        [
+          "C",
+          "Connor McDavid",
+          9.31
+        ],
+        [
+          "C",
+          "Brayden Point",
+          5.67
+        ],
+        [
+          "W",
+          "Jake DeBrusk",
+          4.08
+        ],
+        [
+          "W",
+          "Jesper Bratt",
+          3.92
+        ],
+        [
+          "W",
+          "Mikko Rantanen",
+          5.14
+        ],
+        [
+          "W",
+          "Zach Hyman",
+          4.33
+        ],
+        [
+          "D",
+          "Dougie Hamilton",
+          4.21
+        ],
+        [
+          "D",
+          "Miro Heiskanen",
+          4.46
+        ],
+        [
+          "UTIL",
+          "Pavel Zacha",
+          4.84
+        ],
+        [
+          "G",
+          "Mackenzie Blackwood",
+          0.23
+        ],
+        [
+          "G",
+          "Jesper Wallstedt",
+          6.55
+        ]
+      ],
+      "projected_points": 52.74
+    },
+    {
+      "day": "Wed",
+      "players": null,
+      "projected_points": null
+    },
+    {
+      "day": "Thu",
+      "players": null,
+      "projected_points": null
+    },
+    {
+      "day": "Fri",
+      "players": null,
+      "projected_points": null
+    },
+    {
+      "day": "Sat",
+      "players": null,
+      "projected_points": null
+    },
+    {
+      "day": "Sun",
+      "players": null,
+      "projected_points": null
+    }
+  ]
+}
