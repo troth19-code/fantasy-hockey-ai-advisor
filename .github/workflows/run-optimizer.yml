@@ -4,6 +4,9 @@ name: Run Fantasy Hockey Optimizer
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   optimize:
     runs-on: ubuntu-latest
@@ -15,7 +18,20 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.11'
 
       - name: Run lineup optimizer
         run: python lineup_optimizer.py
+
+      - name: Export dashboard results
+        run: python export_results.py
+
+      - name: Publish dashboard results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add results.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Update fantasy hockey results"
+            git push
+          fi
