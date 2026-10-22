@@ -1,8 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+   Fantasy Hockey AI Advisor
+  </title>
+  <style>
+   :root {
+  font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;
+  color:#edf1ff;
+  background:#0b1020}
+* {
+  box-sizing:border-box}
+body {
+  margin:0}
+header {
+  padding:25px max(20px,calc((100vw - 1100px)/2));
+  background:#111a30;
+  border-bottom:1px solid #26344f}
+.eyebrow {
+  color:#9ca9c7;
+  font-size:12px;
+  letter-spacing:.12em;
+  text-transform:uppercase}
+h1 {
+  margin:7px 0;
+  font-size:clamp(26px,4vw,38px)}
+p {
+  color:#aab6d0}
+main {
+  max-width:1100px;
+  margin:auto;
+  padding:25px 18px 55px}
+.status {
+  display:inline-block;
+  background:#332b16;
+  color:#ffda82;
+  padding:7px 11px;
+  border-radius:50px;
+  font-size:13px}
+.grid {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+  margin:22px 0}
+.card {
+  background:#151f36;
+  border:1px solid #293755;
+  border-radius:17px;
+  padding:20px}
+.metric {
+  font-size:32px;
+  font-weight:750;
+  margin:9px 0}
+.muted {
+  color:#9daac4;
+  font-size:13px}
+.section {
+  margin-top:27px}
+h2 {
+  font-size:19px}
+.days {
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:8px}
+.day {
+  background:#151f36;
+  border:1px solid #30415f;
+  border-radius:12px;
+  color:#f0f4ff;
+  padding:13px 5px;
+  cursor:pointer;
+  text-align:center}
+.day.active {
+  border-color:#9e8cff;
+  background:#302b58}
+.day strong {
+  display:block;
+  font-size:17px;
+  margin:7px 0}
+.lineup {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px}
+.player {
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  background:#10192c;
+  border-radius:9px;
+  padding:12px}
+.slot {
+  font-size:11px;
+  color:#b6a7ff;
+  display:block}
+.value {
+  font-weight:700;
+  white-space:nowrap}
+.notice {
+  border-left:3px solid #9e8cff;
+  padding:12px 15px;
+  background:#181e38;
+  color:#bfc9e0;
+  border-radius:8px}
+.button {
+  display:inline-block;
+  background:#8774f8;
+  color:white;
+  border-radius:10px;
+  padding:12px 17px;
+  text-decoration:none;
+  font-weight:650;
+  margin-top:10px}
+footer {
+  color:#8b99b7;
+  margin-top:28px;
+  font-size:12px}
+@media(max-width:680px) {
+  .grid {
+  grid-template-columns:1fr}
+.days {
+  grid-template-columns:repeat(4,1fr)}
+.lineup {
+  grid-template-columns:1fr}
+}
+  </style>
+ </head>
+ <body>
+  <header>
+   <div class="eyebrow">
+    Personal fantasy hockey analytics
+   </div>
+   <h1>
+    🏒 Fantasy Hockey AI Advisor
+   </h1>
+   <p>
+    Weekly lineup and streaming intelligence
+   </p>
+   <span class="status">
+    ● Yahoo API approval pending · Demo mode
+   </span>
+  </header>
+  <main>
+   <div class="notice">
+    Demo only: the values below are illustrative and are not live Yahoo projections. No Yahoo account data is exposed on this public page.
+   </div>
+   <div class="grid">
+    <div class="card">
+     <div class="muted">
+      Weekly projected points
+     </div>
+     <div class="metric" id="weekly">
+      —
+     </div>
+     <div class="muted">
+      Sum of demo daily optimized lineups
+     </div>
+    </div>
+    <div class="card">
+     <div class="muted">
+      Selected day
+     </div>
+     <div class="metric" id="daily">
+      —
+     </div>
+     <div class="muted">
+      Projected starter points
+     </div>
+    </div>
+    <div class="card">
+     <div class="muted">
+      Acquisitions remaining
+     </div>
+     <div class="metric">
+      3
+     </div>
+     <div class="muted">
+      Example weekly limit · resets weekly
+     </div>
+    </div>
+   </div>
+   <section class="section">
+    <h2>
+     Daily lineup
+    </h2>
+    <p>
+     Select a day to inspect its projected starters.
+    </p>
+    <div class="days" id="days">
+    </div>
+    <div class="card" style="margin-top:14px">
+     <h2 id="dayTitle">
+      —
+     </h2>
+     <div class="lineup" id="lineup">
+     </div>
+    </div>
+   </section>
+   <section class="section">
+    <h2>
+     Streaming opportunities
+    </h2>
+    <div class="card">
+     <p>
+      Coming next: compare a free agent's expected usable starts against the player you would drop, accounting for daily lineup congestion and your remaining acquisitions.
+     </p>
+     <div class="muted">
+      No add/drop recommendations are generated from the demo dataset.
+     </div>
+    </div>
+   </section>
+   <section class="section">
+    <h2>
+     Yahoo integration
+    </h2>
+    <div class="card">
+     <p>
+      Read-only Yahoo Fantasy Sports API access is pending. The future connector will retrieve league scoring, roster eligibility, schedules, and available players securely on the server side.
+     </p>
+     <span class="status">
+      Awaiting API credentials
+     </span>
+    </div>
+   </section>
+   <footer>
+    Prototype v1 · Sample data only · Public GitHub Pages site
+   </footer>
+  </main>
+  <script>
+   const sample = [
+  { day: 'Mon', players: [
+    ['C', 'Sample Centre A', 5.1],
+    ['W', 'Sample Wing A', 4.4],
+    ['D', 'Sample Defender A', 3.2],
+    ['G', 'Sample Goalie A', 5.6]
+  ] },
+  { day: 'Tue', players: [
+    ['C', 'Connor McDavid', 9.31],
+    ['C', 'Brayden Point', 5.67],
+    ['W', 'Jake DeBrusk', 4.08],
+    ['W', 'Jesper Bratt', 3.92],
+    ['W', 'Mikko Rantanen', 5.14],
+    ['W', 'Pavel Zacha', 4.84],
+    ['D', 'Dougie Hamilton', 4.21],
+    ['D', 'Miro Heiskanen', 4.46],
+    ['UTIL', 'Zach Hyman', 4.33],
+    ['G', 'Mackenzie Blackwood', 0.23],
+    ['G', 'Jesper Wallstedt', 6.55]
+  ] },
+  { day: 'Wed', players: [
+    ['W', 'Sample Wing B', 4.1],
+    ['W', 'Sample Wing C', 5.3]
+  ] },
+  { day: 'Thu', players: [
+    ['C', 'Sample Centre B', 8.7],
+    ['W', 'Sample Wing D', 5.2],
+    ['D', 'Sample Defender B', 4.1],
+    ['G', 'Sample Goalie B', 5.4]
+  ] },
+  { day: 'Fri', players: [
+    ['C', 'Sample Centre C', 4.7],
+    ['G', 'Sample Goalie C', 4.8]
+  ] },
+  { day: 'Sat', players: [
+    ['C', 'Sample Centre D', 7.1],
+    ['W', 'Sample Wing E', 4.9],
+    ['D', 'Sample Defender C', 4.2],
+    ['G', 'Sample Goalie D', 5.5]
+  ] },
+  { day: 'Sun', players: [
+    ['W', 'Sample Wing F', 5.1],
+    ['D', 'Sample Defender D', 3.8],
+    ['G', 'Sample Goalie E', 5.0]
+  ] }
+];
 
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Fantasy Hockey AI Advisor</title><style>
-:root{font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:#edf1ff;background:#0b1020}*{box-sizing:border-box}body{margin:0}header{padding:25px max(20px,calc((100vw - 1100px)/2));background:#111a30;border-bottom:1px solid #26344f}.eyebrow{color:#9ca9c7;font-size:12px;letter-spacing:.12em;text-transform:uppercase}h1{margin:7px 0;font-size:clamp(26px,4vw,38px)}p{color:#aab6d0}main{max-width:1100px;margin:auto;padding:25px 18px 55px}.status{display:inline-block;background:#332b16;color:#ffda82;padding:7px 11px;border-radius:50px;font-size:13px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0}.card{background:#151f36;border:1px solid #293755;border-radius:17px;padding:20px}.metric{font-size:32px;font-weight:750;margin:9px 0}.muted{color:#9daac4;font-size:13px}.section{margin-top:27px}h2{font-size:19px}.days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}.day{background:#151f36;border:1px solid #30415f;border-radius:12px;color:#f0f4ff;padding:13px 5px;cursor:pointer;text-align:center}.day.active{border-color:#9e8cff;background:#302b58}.day strong{display:block;font-size:17px;margin:7px 0}.lineup{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.player{display:flex;justify-content:space-between;gap:8px;background:#10192c;border-radius:9px;padding:12px}.slot{font-size:11px;color:#b6a7ff;display:block}.value{font-weight:700;white-space:nowrap}.notice{border-left:3px solid #9e8cff;padding:12px 15px;background:#181e38;color:#bfc9e0;border-radius:8px}.button{display:inline-block;background:#8774f8;color:white;border-radius:10px;padding:12px 17px;text-decoration:none;font-weight:650;margin-top:10px}footer{color:#8b99b7;margin-top:28px;font-size:12px}@media(max-width:680px){.grid{grid-template-columns:1fr}.days{grid-template-columns:repeat(4,1fr)}.lineup{grid-template-columns:1fr}}
-</style></head><body><header><div class="eyebrow">Personal fantasy hockey analytics</div><h1>🏒 Fantasy Hockey AI Advisor</h1><p>Weekly lineup and streaming intelligence</p><span class="status">● Yahoo API approval pending · Demo mode</span></header><main><div class="notice">Demo only: the values below are illustrative and are not live Yahoo projections. No Yahoo account data is exposed on this public page.</div><div class="grid"><div class="card"><div class="muted">Weekly projected points</div><div class="metric" id="weekly">—</div><div class="muted">Sum of demo daily optimized lineups</div></div><div class="card"><div class="muted">Selected day</div><div class="metric" id="daily">—</div><div class="muted">Projected starter points</div></div><div class="card"><div class="muted">Acquisitions remaining</div><div class="metric">3</div><div class="muted">Example weekly limit · resets weekly</div></div></div><section class="section"><h2>Daily lineup</h2><p>Select a day to inspect its projected starters.</p><div class="days" id="days"></div><div class="card" style="margin-top:14px"><h2 id="dayTitle">—</h2><div class="lineup" id="lineup"></div></div></section><section class="section"><h2>Streaming opportunities</h2><div class="card"><p>Coming next: compare a free agent's expected usable starts against the player you would drop, accounting for daily lineup congestion and your remaining acquisitions.</p><div class="muted">No add/drop recommendations are generated from the demo dataset.</div></div></section><section class="section"><h2>Yahoo integration</h2><div class="card"><p>Read-only Yahoo Fantasy Sports API access is pending. The future connector will retrieve league scoring, roster eligibility, schedules, and available players securely on the server side.</p><span class="status">Awaiting API credentials</span></div></section><footer>Prototype v1 · Sample data only · Public GitHub Pages site</footer></main><script>
-const sample=[{day:'Mon',players:[['C','Sample Centre A',5.1],['W','Sample Wing A',4.4],['D','Sample Defender A',3.2],['G','Sample Goalie A',5.6]]},{day:'Tue',players:[['C','Connor McDavid',9.31],['C','Brayden Point',5.67],['W','Jake DeBrusk',4.08],['W','Jesper Bratt',3.92],['W','Mikko Rantanen',5.14],['W','Pavel Zacha',4.84],['D','Dougie Hamilton',4.21],['D','Miro Heiskanen',4.46],['UTIL','Zach Hyman',4.33],['G','Mackenzie Blackwood',0.23],['G','Jesper Wallstedt',6.55]]},{day:'Wed',players:[['W','Sample Wing B',4.1],['W','Sample Wing C',5.3]]},{day:'Thu',players:[['C','Sample Centre B',8.7],['W','Sample Wing D',5.2],['D','Sample Defender B',4.1],['G','Sample Goalie B',5.4]]},{day:'Fri',players:[['C','Sample Centre C',4.7],['G','Sample Goalie C',4.8]]},{day:'Sat',players:[['C','Sample Centre D',7.1],['W','Sample Wing E',4.9],['D','Sample Defender C',4.2],['G','Sample Goalie D',5.5]]},{day:'Sun',players:[['W','Sample Wing F',5.1],['D','Sample Defender D',3.8],['G','Sample Goalie E',5.0]]}];
-const sum=d=>d.players.reduce((s,p)=>s+p[2],0);const fmt=n=>n.toFixed(2);document.getElementById('weekly').textContent=fmt(sample.reduce((s,d)=>s+sum(d),0));let active=1;function render(){document.getElementById('days').innerHTML=sample.map((d,i)=>`<button class="day ${i===active?'active':''}" data-index="${i}">${d.day}<strong>${fmt(sum(d))}</strong><span class="muted">pts</span></button>`).join('');const d=sample[active];document.getElementById('daily').textContent=fmt(sum(d));document.getElementById('dayTitle').textContent=d.day+' · Example starters';document.getElementById('lineup').innerHTML=d.players.map(p=>`<div class="player"><div><span class="slot">${p[0]}</span>${p[1]}</div><span class="value">${fmt(p[2])}</span></div>`).join('');document.querySelectorAll('.day').forEach(b=>b.addEventListener('click',()=>{active=Number(b.dataset.index);render()}))}render();
-</script></body></html>
+const sum = day => day.players.reduce((total, player) => total + player[2], 0);
+const fmt = value => value.toFixed(2);
+
+document.getElementById('weekly').textContent = fmt(
+  sample.reduce((total, day) => total + sum(day), 0)
+);
+
+let active = 1;
+
+function render() {
+  document.getElementById('days').innerHTML = sample.map((day, index) => `
+    <button class="day ${index === active ? 'active' : ''}" data-index="${index}">
+      ${day.day}
+      <strong>${fmt(sum(day))}</strong>
+      <span class="muted">pts</span>
+    </button>
+  `).join('');
+
+  const day = sample[active];
+  document.getElementById('daily').textContent = fmt(sum(day));
+  document.getElementById('dayTitle').textContent = day.day + ' · Example starters';
+  document.getElementById('lineup').innerHTML = day.players.map(player => `
+    <div class="player">
+      <div><span class="slot">${player[0]}</span>${player[1]}</div>
+      <span class="value">${fmt(player[2])}</span>
+    </div>
+  `).join('');
+
+  document.querySelectorAll('.day').forEach(button => {
+    button.addEventListener('click', () => {
+      active = Number(button.dataset.index);
+      render();
+    });
+  });
+}
+
+render();
+  </script>
+ </body>
+</html>
