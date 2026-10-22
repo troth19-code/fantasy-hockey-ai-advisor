@@ -144,7 +144,7 @@ footer {
   </header>
   <main>
    <div class="notice">
-    Demo only: the values below are illustrative and are not live Yahoo projections. No Yahoo account data is exposed on this public page.
+    Demo only: Tuesday is calculated from sample inputs. Other days are intentionally unavailable. No private Yahoo data is published.
    </div>
    <div class="grid">
     <div class="card">
@@ -155,7 +155,7 @@ footer {
       —
      </div>
      <div class="muted">
-      Sum of demo daily optimized lineups
+      Full-week projection not available until all seven days are calculated
      </div>
     </div>
     <div class="card">
@@ -177,7 +177,7 @@ footer {
       3
      </div>
      <div class="muted">
-      Example weekly limit · resets weekly
+      Not yet connected to Yahoo · weekly limit is 3
      </div>
     </div>
    </div>
@@ -229,90 +229,71 @@ footer {
    </footer>
   </main>
   <script>
-   const sample = [
-  { day: 'Mon', players: [
-    ['C', 'Sample Centre A', 5.1],
-    ['W', 'Sample Wing A', 4.4],
-    ['D', 'Sample Defender A', 3.2],
-    ['G', 'Sample Goalie A', 5.6]
-  ] },
-  { day: 'Tue', players: [
-    ['C', 'Connor McDavid', 9.31],
-    ['C', 'Brayden Point', 5.67],
-    ['W', 'Jake DeBrusk', 4.08],
-    ['W', 'Jesper Bratt', 3.92],
-    ['W', 'Mikko Rantanen', 5.14],
-    ['W', 'Pavel Zacha', 4.84],
-    ['D', 'Dougie Hamilton', 4.21],
-    ['D', 'Miro Heiskanen', 4.46],
-    ['UTIL', 'Zach Hyman', 4.33],
-    ['G', 'Mackenzie Blackwood', 0.23],
-    ['G', 'Jesper Wallstedt', 6.55]
-  ] },
-  { day: 'Wed', players: [
-    ['W', 'Sample Wing B', 4.1],
-    ['W', 'Sample Wing C', 5.3]
-  ] },
-  { day: 'Thu', players: [
-    ['C', 'Sample Centre B', 8.7],
-    ['W', 'Sample Wing D', 5.2],
-    ['D', 'Sample Defender B', 4.1],
-    ['G', 'Sample Goalie B', 5.4]
-  ] },
-  { day: 'Fri', players: [
-    ['C', 'Sample Centre C', 4.7],
-    ['G', 'Sample Goalie C', 4.8]
-  ] },
-  { day: 'Sat', players: [
-    ['C', 'Sample Centre D', 7.1],
-    ['W', 'Sample Wing E', 4.9],
-    ['D', 'Sample Defender C', 4.2],
-    ['G', 'Sample Goalie D', 5.5]
-  ] },
-  { day: 'Sun', players: [
-    ['W', 'Sample Wing F', 5.1],
-    ['D', 'Sample Defender D', 3.8],
-    ['G', 'Sample Goalie E', 5.0]
-  ] }
-];
+    const fmt = value => Number(value).toFixed(2);
+    let data = null;
+    let active = 1;
 
-const sum = day => day.players.reduce((total, player) => total + player[2], 0);
-const fmt = value => value.toFixed(2);
+    function render() {
+      document.getElementById('weekly').textContent =
+        data.weekly_projected_points == null ? 'Pending' : fmt(data.weekly_projected_points);
+      const acquisition = document.querySelector('.grid .card:nth-child(3) .metric');
+      acquisition.textContent = data.acquisitions_remaining == null ? '—' : data.acquisitions_remaining;
+      document.getElementById('days').innerHTML = data.days.map((day, index) => `
+        <button class="day ${index === active ? 'active' : ''}" data-index="${index}">
+          ${day.day}<strong>${day.projected_points == null ? '—' : fmt(day.projected_points)}</strong>
+          <span class="muted">${day.projected_points == null ? 'No data' : 'pts'}</span>
+        </button>
+      `).join('');
+      const day = data.days[active];
+      document.getElementById('daily').textContent = day.projected_points == null ? '—' : fmt(day.projected_points);
+      document.getElementById('dayTitle').textContent = day.day + ' · ' + (day.players ? 'Sample optimized starters' : 'Awaiting data');
+      const lineup = document.getElementById('lineup');
+      lineup.replaceChildren();
+      if (!day.players) {
+        lineup.textContent = 'No projections have been generated for this day yet.';
+      } else {
+        for (const [slot, name, points] of day.players) {
+          const item = document.createElement('div');
+          item.className = 'player';
+          const left = document.createElement('div');
+          const slotLabel = document.createElement('span');
+          slotLabel.className = 'slot';
+          slotLabel.textContent = slot;
+          left.append(slotLabel, document.createTextNode(name));
+          const value = document.createElement('span');
+          value.className = 'value';
+          value.textContent = fmt(points);
+          item.append(left, value);
+          lineup.append(item);
+        }
+      }
+      document.querySelectorAll('.day').forEach(button => {
+        button.addEventListener('click', () => {
+          active = Number(button.dataset.index);
+          render();
+        });
+      });
+    }
 
-document.getElementById('weekly').textContent = fmt(
-  sample.reduce((total, day) => total + sum(day), 0)
-);
-
-let active = 1;
-
-function render() {
-  document.getElementById('days').innerHTML = sample.map((day, index) => `
-    <button class="day ${index === active ? 'active' : ''}" data-index="${index}">
-      ${day.day}
-      <strong>${fmt(sum(day))}</strong>
-      <span class="muted">pts</span>
-    </button>
-  `).join('');
-
-  const day = sample[active];
-  document.getElementById('daily').textContent = fmt(sum(day));
-  document.getElementById('dayTitle').textContent = day.day + ' · Example starters';
-  document.getElementById('lineup').innerHTML = day.players.map(player => `
-    <div class="player">
-      <div><span class="slot">${player[0]}</span>${player[1]}</div>
-      <span class="value">${fmt(player[2])}</span>
-    </div>
-  `).join('');
-
-  document.querySelectorAll('.day').forEach(button => {
-    button.addEventListener('click', () => {
-      active = Number(button.dataset.index);
-      render();
-    });
-  });
-}
-
-render();
+    async function loadResults() {
+      try {
+        const response = await fetch('./results.json', { cache: 'no-store' });
+        if (!response.ok) throw new Error('results.json not published yet');
+        const payload = await response.json();
+        if (!Array.isArray(payload.days) || payload.days.length !== 7) {
+          throw new Error('Unexpected results.json format');
+        }
+        data = payload;
+        render();
+      } catch (error) {
+        document.getElementById('weekly').textContent = 'Waiting';
+        document.getElementById('daily').textContent = '—';
+        document.getElementById('days').textContent = 'Run the optimizer workflow to publish results.json.';
+        document.getElementById('dayTitle').textContent = 'No published results yet';
+        document.getElementById('lineup').textContent = error.message;
+      }
+    }
+    loadResults();
   </script>
  </body>
 </html>
