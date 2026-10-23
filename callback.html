@@ -1,0 +1,29 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="referrer" content="no-referrer">
+  <title>Yahoo Authorization</title>
+</head>
+<body>
+  <h2>Yahoo Fantasy Authorization</h2>
+  <p id="status">Checking authorization...</p>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const error = params.get("error");
+    const code = params.get("code");
+
+    document.getElementById("status").textContent =
+      error
+        ? "Yahoo authorization was not completed."
+        : code
+          ? "Authorization received. Return to your local setup process."
+          : "No authorization response was received.";
+
+    // Remove the authorization code from the visible URL.
+    window.history.replaceState({}, "", window.location.pathname);
+  </script>
+</body>
+</html>
