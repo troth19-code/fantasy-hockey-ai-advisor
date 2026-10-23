@@ -4,26 +4,52 @@
 <head>
   <meta charset="UTF-8">
   <meta name="referrer" content="no-referrer">
-  <title>Yahoo Authorization</title>
+  <title>Yahoo Fantasy Authorization</title>
 </head>
 <body>
-  <h2>Yahoo Fantasy Authorization</h2>
+  <h2>Yahoo Authorization</h2>
   <p id="status">Checking authorization...</p>
+  <button id="copy" hidden>Copy callback URL</button>
 
   <script>
     const params = new URLSearchParams(window.location.search);
-    const error = params.get("error");
     const code = params.get("code");
+    const state = params.get("state");
+    const error = params.get("error");
 
-    document.getElementById("status").textContent =
-      error
-        ? "Yahoo authorization was not completed."
-        : code
-          ? "Authorization received. Return to your local setup process."
-          : "No authorization response was received.";
+    const status = document.getElementById("status");
+    const button = document.getElementById("copy");
 
-    // Remove the authorization code from the visible URL.
-    window.history.replaceState({}, "", window.location.pathname);
+    if (error) {
+      status.textContent = "Yahoo authorization was not completed.";
+    } else if (code && state) {
+      // Keep the code in memory, not in the visible address bar.
+      const callbackUrl = window.location.href;
+
+      window.history.replaceState(
+        {},
+        "",
+        window.location.pathname
+      );
+
+      status.textContent =
+        "Authorization received. Copy the callback URL and " +
+        "paste it into your local Terminal when prompted.";
+
+      button.hidden = false;
+      button.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(callbackUrl);
+          status.textContent =
+            "Copied! Return to Terminal and paste the URL.";
+        } catch {
+          status.textContent =
+            "Copy failed. Check browser clipboard permissions.";
+        }
+      });
+    } else {
+      status.textContent = "No authorization response received.";
+    }
   </script>
 </body>
 </html>
