@@ -1,0 +1,27 @@
+name: Validate Yahoo League Data
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: yahoo-league-validation
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install requests
+      - name: Validate read-only league endpoints
+        env:
+          YAHOO_CLIENT_ID: ${{ secrets.YAHOO_CLIENT_ID }}
+          YAHOO_CLIENT_SECRET: ${{ secrets.YAHOO_CLIENT_SECRET }}
+          YAHOO_REFRESH_TOKEN: ${{ secrets.YAHOO_REFRESH_TOKEN }}
+          YAHOO_TEAM_KEY: ${{ secrets.YAHOO_TEAM_KEY }}
+        run: python validate_league_data.py
