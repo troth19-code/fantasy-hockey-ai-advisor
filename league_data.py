@@ -24,7 +24,7 @@ def get(client, endpoint):
 def discover(client):
     return get(client, "users;use_login=1/games;game_keys=nhl/teams")
 
-def snapshot(client, team_key, max_player_pages=20):
+def snapshot(client, team_key, max_player_pages=100):
     if not re.fullmatch(r"\d+\.l\.\d+\.t\.\d+", team_key):
         raise ValueError("Invalid team key")
     league = team_key.rsplit(".t.", 1)[0]
